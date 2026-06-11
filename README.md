@@ -12,6 +12,24 @@ The current goal is not "full distributed backpropagation on mobile". The goal i
 
 This repository already contains a working control plane, Android workers, model artifact distribution, and an end-to-end request path. It is still a **prototype**, not a production scheduler.
 
+## Public Release Scope
+
+This public repository is a clean source release of the research prototype. It intentionally excludes private debug logs, draft reports, generated figures, model weights, datasets, `.pte` artifacts, SQLite runtime state, Android build outputs, and earlier private Git history.
+
+What is included:
+
+- source code for the Android worker and JVM coordinator
+- sanitized example pipeline configuration
+- export, request-preparation, reporting, and Android helper scripts
+- protocol definitions and tests that are part of the prototype
+
+What you must provide locally:
+
+- Android SDK/NDK and device setup
+- model checkpoints and datasets, subject to their own licenses
+- exported ExecuTorch `.pte` shards under `model/` or another configured local path
+- per-machine coordinator config values such as LAN IPs and device IDs
+
 ## What This Repository Is
 
 - An **Android worker app** that downloads a shard, runs it with ExecuTorch, and forwards tensors to the next worker.
@@ -77,7 +95,7 @@ Today the request path is still pipeline-shaped, but the intended research direc
 |- CONTRIBUTING.md      Collaboration and handoff guide
 |- environment.yml      Minimal conda environment for export
 |- requirements-export.txt  Minimal pip dependencies for export
-|- requirement.txt      Raw environment snapshot from a working machine
+|- requirement.txt      Full dependency snapshot from a development environment
 `- README.md
 ```
 
@@ -163,7 +181,7 @@ conda activate mobile-bpfree-export
 
 This environment is intended for the **server-side export machine**, not for Android.
 
-The file [requirement.txt](requirement.txt) is kept only as a **raw environment snapshot** from a working machine. It is not meant to be installed with `pip install -r requirement.txt`, and it is not a clean collaboration entrypoint.
+The file [requirement.txt](requirement.txt) is kept only as a **full dependency snapshot** from one development environment. It is not meant to be installed with `pip install -r requirement.txt`, and it is not a clean collaboration entrypoint.
 
 Keep the Python `executorch` package version aligned with the Android `executorch-android` dependency when possible.
 
@@ -363,7 +381,7 @@ Before running, update at least:
 - `stages[].expectedHost`
 - `stages[].expectedPort`
 
-The checked-in `pipeline.json` may contain local development values. For team setup, prefer copying `pipeline.example.json` into your own local config first.
+The checked-in `pipeline.json` uses sanitized sample values. For real devices, copy `pipeline.example.json` or `pipeline.json` into your own local config and replace the host names, ports, device IDs, and artifact paths.
 
 Start the coordinator:
 
@@ -573,6 +591,8 @@ That scheduler is **not finished yet**. The current system should be treated as 
 - define the next scheduling abstraction beyond relay-style forwarding
 - formalize the training method name and benchmark protocol
 
-## License / Release State
+## License
 
-No release process or license text has been added yet in this repository snapshot. Add those before public release.
+This repository is released under the Apache License 2.0. See [LICENSE](LICENSE).
+
+The license covers the source code in this repository. It does not grant rights to third-party model checkpoints, datasets, Android SDK components, ExecuTorch binaries, or other external artifacts you may use with the prototype.
